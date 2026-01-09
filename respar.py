@@ -27,7 +27,7 @@ def extract_text_from_pdf(pdf_path):
         print(f"Error reading PDF: {e}")
         return None
 
-def parse_with_ai(resume_text):
+def parse(resume_text):
     
     system_prompt = """
     You are an expert Resume Parser. 
@@ -96,4 +96,5 @@ def main():
             print("Invalid choice. Please enter 1 or 2.")
 
 if __name__ == "__main__":
+
     main()
