@@ -74,7 +74,7 @@ def main():
             text = extract_text_from_pdf(path)
             
             if text:
-                data = parse_with_ai(text)
+                data = parse(text)
                 if data:
                     print("\n--- Extraction Result ---")
                     print(json.dumps(data, indent=4))
@@ -98,3 +98,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
