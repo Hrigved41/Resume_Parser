@@ -10,7 +10,7 @@ An interactive Python tool that extracts specific information from resume PDFs i
 ## 🛠️ Tech Stack
 - **Language**: Python 3.10+
 - **AI Engine**: [Ollama](https://ollama.com/) (Model: Llama 3)
-- **Library**: `pypdf`, `re`, `json`, `tkinter`
+- **Library**: `pdfplumber`, `re`, `json`, `tkinter`
 
 ## 🚀 Getting Started
 
