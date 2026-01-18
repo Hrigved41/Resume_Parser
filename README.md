@@ -6,9 +6,6 @@ A robust, privacy-focused Python application that extracts structured data from 
 - **Local AI Processing**: Uses **Ollama** (Llama 3) to parse resumes entirely offline. No data leaves your machine.
 - **Smart Text Extraction**: Utilizes `pdfplumber` with layout awareness to correctly read complex multi-column resumes.
 - **Database Integration**: Automatically stores candidates in a **MySQL** database.
-- **Auto-Sequencing IDs**: Generates sequential Employee IDs (`1, 2, 3...`) automatically.
-- **Smart Date Conversion**: Intelligent logic to convert resume dates (e.g., "03/01/2003", "Jan 2020") into MySQL-compatible `YYYY-MM-DD` format.
-- **Secure Authentication**: Prompts for the database password securely at runtime (no hardcoded passwords).
 - **Interactive UI**: Native file selection dialog for easy PDF picking.
 
 ---
