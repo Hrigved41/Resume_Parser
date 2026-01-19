@@ -6,10 +6,11 @@ import tkinter as tk
 from tkinter import filedialog
 from datetime import datetime
 
+
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '',
+    'password': '', 
     'database': 'empl_database'
 }
 
@@ -17,13 +18,14 @@ db_config = {
 def select_json_file():
     """Opens a file dialog to let the user select a JSON file."""
     root = tk.Tk()
-    root.withdraw() 
+    root.withdraw()
     file_path = filedialog.askopenfilename(
         title="Select Resume JSON Data",
         filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
     )
     root.destroy()
     return file_path
+
 
 def convert_to_mysql_date(date_str):
     if not date_str: return None
@@ -52,32 +54,59 @@ def insert_single_resume(cursor, json_data):
         empl_cd = get_next_employee_id(cursor)
         formatted_dob = convert_to_mysql_date(json_data.get("date_of_birth"))
 
- 
+        
+        def clean_str(value):
+            if isinstance(value, list):
+                return ", ".join(map(str, value)) 
+            if value is None:
+                return ""
+            return str(value)
+
+     
         emp_values = (
             empl_cd,
-            json_data.get("full_name", ""),
+            clean_str(json_data.get("full_name")),
             formatted_dob,
-            json_data.get("email", ""),
-            json_data.get("phone", ""),
-            json_data.get("address", ""),
-            json_data.get("pincode", "")
+            clean_str(json_data.get("email")),
+            clean_str(json_data.get("phone")),
+            clean_str(json_data.get("address")), 
+            clean_str(json_data.get("pincode"))
         )
-        sql_employee = "INSERT INTO employee (empl_cd, name, b_date, email, mobile, res_addr1, res_pin) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+
+        sql_employee = """
+            INSERT INTO employee (empl_cd, name, b_date, email, mobile, res_addr1, res_pin) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
         cursor.execute(sql_employee, emp_values)
-        print(f"   -> Inserted Employee: {json_data.get('full_name')} (ID: {empl_cd})")
+        print(f"   -> Inserted Employee: {clean_str(json_data.get('full_name'))} (ID: {empl_cd})")
 
-
+      
         education_list = json_data.get("education", [])
         if education_list:
             sql_edu = "INSERT INTO edu_dtl (empl_cd, degree, university, pass_yr) VALUES (%s, %s, %s, %s)"
-            edu_values = [(empl_cd, e.get("degree", ""), e.get("institution", ""), e.get("year", "")) for e in education_list]
+            edu_values = []
+            for edu in education_list:
+                edu_values.append((
+                    empl_cd,
+                    clean_str(edu.get("degree")),
+                    clean_str(edu.get("institution")),
+                    clean_str(edu.get("year"))
+                ))
             cursor.executemany(sql_edu, edu_values)
 
 
         experience_list = json_data.get("experience", [])
         if experience_list:
             sql_exp = "INSERT INTO exp_dtl (empl_cd, company, experience, fr_dt, to_dt) VALUES (%s, %s, %s, %s, %s)"
-            exp_values = [(empl_cd, x.get("company", ""), x.get("duration", ""), '0000-00-00', '0000-00-00') for x in experience_list]
+            exp_values = []
+            for x in experience_list:
+                exp_values.append((
+                    empl_cd,
+                    clean_str(x.get("company")),
+                    clean_str(x.get("duration")),
+                    '0000-00-00', 
+                    '0000-00-00'
+                ))
             cursor.executemany(sql_exp, exp_values)
 
         return True
@@ -86,10 +115,11 @@ def insert_single_resume(cursor, json_data):
         print(f"   [!] Database Error for {json_data.get('full_name')}: {err}")
         return False
 
+
 def main():
     print("--- Import JSON to Database ---")
     
-
+  
     try:
         db_config['password'] = getpass.getpass("Enter MySQL Root Password: ")
     except:
@@ -97,14 +127,14 @@ def main():
 
     print("\nPlease select the JSON file from the pop-up window...")
     
-    
+ 
     json_filename = select_json_file()
     
     if not json_filename:
         print("No file selected. Exiting.")
         return
 
-    
+
     conn = None
     try:
         conn = mysql.connector.connect(**db_config)
